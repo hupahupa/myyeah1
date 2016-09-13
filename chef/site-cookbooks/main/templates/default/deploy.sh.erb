@@ -1,0 +1,16 @@
+#!/bin/sh
+
+<% site_dir = node[:web][:site_dir] -%>
+<% env = node[:web][:env] -%>
+
+. <%= node[:web][:python][:virtualenv] %>/bin/activate
+cd <%= site_dir %>/schema
+python update.py commit
+
+#compile again the translation
+cd <%= site_dir %>
+pybabel compile -f -d web/translations
+
+<% if env == 'local' -%>
+sudo service <%= node[:web][:app_name] %> restart
+<% end -%>

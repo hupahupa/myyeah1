@@ -1,0 +1,7 @@
+
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+exec su -s /bin/sh -c 'exec "$0" "$@"' <%= node[:web][:app_user] %> -- <%= node[:web][:site_dir] %>/scripts/web.sh
+respawn

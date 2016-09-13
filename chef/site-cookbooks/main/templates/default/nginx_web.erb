@@ -1,0 +1,42 @@
+<%- web = node[:web] -%>
+<%- server_names = web[:server_names] -%>
+<%- log_dir = web[:log_dir] -%>
+<%- server_aliases = web[:server_aliases] -%>
+server {
+
+    listen              80;
+    server_name         <%= server_names.join(' ') %>;
+    access_log          <%= log_dir %>/access.log;
+    error_log           <%= log_dir %>/error.log;
+
+
+    location / {
+        try_files $uri @flask;
+    }
+
+    # FIX: This is temporary. Designate a directory X as root of
+    # publicly available resources (i.e. resource urls relative to
+    # root should be the same as file paths relative to X (e.g. if X
+    # is "/static", css files are under "/static/css", then css urls
+    # should start with "/css" not "/static/css")).
+    location /static {
+        root <%= node[:web][:site_dir] %>/web;
+    }
+
+
+    location ~ /(\.|Vagrantfile|chef) {
+        # Protect code files
+        return 444;
+    }
+
+    <%- if web[:blocked_keywords] -%>
+    location ~* (<%= web[:blocked_keywords].join("|") %>) {
+        return 444;
+    }
+    <%- end -%>
+
+    location @flask {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/<%= node[:web][:app_name]%>_uwsgi.sock;
+    }
+}

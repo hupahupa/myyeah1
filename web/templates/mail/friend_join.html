@@ -1,0 +1,10 @@
+{% extends "mail/main.html" %}
+
+{% block content %}
+{{ _("Hi %(user_name)s", user_name=friend_user.full_name) | e }}, <br><br>
+
+{{ _("Your Friend %(friend_name)s has joined uPaty", friend_name=user.full_name) | e }}<br><br>
+
+<a href="upaty://">{{ _("Let's Paty Now") }}</a><br><br>
+
+{% endblock %}

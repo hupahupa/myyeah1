@@ -1,0 +1,22 @@
+{% macro render(helper) %}
+<ul class="list-unstyled menu-links">
+    <li class="nav-item {{ "active" if helper.isActiveRoute('') else ""  }}"><a href="/">Home</a></li>
+    {#<li class="nav-item {{ "active" if helper.isActiveRoute('/blog') else ""  }}"><a href="/blog">Blog</a></li>
+    <li class="nav-item {{ "active" if helper.isActiveRoute('/party') else ""  }}"><a href="/party">Party</a></li>#}
+        {# <a class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="0" data-close-others="false" href="#">Options<i class="fa fa-angle-down"></i></a>
+        <ul class="dropdown-menu">
+            <li><a href="index.html">iPhone 6 Plus (Gold)</a></li>
+            <li><a href="index-iphone-2.html">iPhone 6 Plus (Space Grey)</a></li>
+            <li><a href="index-android.html">Android</a></li>
+        </ul> #}
+    </li><!--//dropdown-->
+</ul>
+<ul class="social-icons list-inline">
+    {#<li><a href=""><i class="fa fa-twitter"></i></a></li>#}
+    <li><a href="https://www.facebook.com/uPatyApp" target="_blank"><i class="fa fa-facebook"></i></a></li>
+</ul>
+
+<ul class="list-unstyled download-buttons">
+    <li class="app-store"><a href="https://itunes.apple.com/us/app/upaty/id975147318" target="_blank"><img class="img-responsive" src="{{ url_for('static', filename='assets/images/buttons/btn-app-store.png') }}" alt="Download from App Store" /></a></li>
+</ul><!--//list-unstyled-->
+{% endmacro %}

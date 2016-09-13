@@ -1,0 +1,25 @@
+{% extends "layout/main.html" %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block content %}
+<div class="well col-md-4 col-md-offset-4">
+<form enctype="multipart/form-data" method="post">
+  {{ form.csrf_token }}
+  <div class="form-group">
+    <label for="exampleInputFile">Select video files</label>
+    <input type="file" name=file>
+    <p class="help-block">Allow .mp4, .avi</p>
+  </div>
+  <div class="form-group">
+    <label for="">Name</label>
+    {{ form.name(placeholder='Name', class='form-control') }}
+  </div>
+  <button type="submit" class="btn btn-default">Upload</button>
+</form>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}

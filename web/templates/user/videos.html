@@ -1,0 +1,40 @@
+{% extends "layout/main.html" %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block content %}
+<h3>List videos of {{ user.email }}</h3>
+<table class="table table-striped">
+  <thead>
+  	<tr>
+  		<th>Id</th>
+  		<th>Name</th>
+        <th>Youtube Link</th>
+        <th>Facebook Link</th>
+        <th>Dailymotion Link</th>
+        <th>Report</th>
+  	</tr>
+  </thead>
+  <tbody>
+  	{% set videos = user.videos %}
+    {% for v in videos %}
+  	<tr>
+  		<td>{{ v.id }}</td>
+  		<td>{{ v.name }}</td>
+      {% if not v.fb_url %}
+  		<td><a class="js-upload" data-url="/user/upload_facebook/{{ v.id }}" href="/user/upload_facebook/{{ v.id }}">Upload FB</a></td>
+      {% else %}
+      <td><a href="{{ v.fb_url }}" target="_blank">View</a></td>
+      {% endif %}
+      	<td>{{ "LINK" }}</td>
+      	<td>{{ "LINK" }}</td>
+      	<td><a href="/user/video_report/{{ v.id }}">view</a></td>
+  	</tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}

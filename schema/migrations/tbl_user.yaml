@@ -1,0 +1,23 @@
+---
+table: tbl_user
+from: null
+to: lmd_1
+sql: |
+  CREATE TYPE USER_STATUS_ENUM AS ENUM ('pending', 'active');
+  CREATE TABLE tbl_user (
+    id SERIAL NOT NULL PRIMARY KEY,
+    full_name TEXT,
+    fb_id TEXT,
+    email TEXT,
+    password TEXT,
+    secret_token TEXT,
+    avatar TEXT,
+    fb_token TEXT,
+    role TEXT DEFAULT 'user',
+    status USER_STATUS_ENUM DEFAULT 'pending',
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    UNIQUE(fb_id),
+    UNIQUE(secret_token),
+    UNIQUE(email)
+  );

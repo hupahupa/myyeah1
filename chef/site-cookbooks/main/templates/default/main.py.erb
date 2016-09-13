@@ -1,0 +1,36 @@
+from config.common import config
+
+<% db = node[:web][:db] -%>
+<% domains = node[:web][:server_names] -%>
+<% emails = node[:web][:emails] -%>
+<% mandrill = emails[:mandrill] -%>
+<% env = node[:web][:env] -%>
+
+config.update({
+    'DOMAIN': '<%= domains[0] %>',
+    'SQLALCHEMY_DATABASE_URI': 'postgresql://<%= db[:user] %>:<%= db[:password] %>@<%= db[:host] %>/<%= db[:database] %>',
+    'SECRET_KEY': '<%= node[:web][:secret_key]%>',
+    'SQLALCHEMY_ECHO': <%= db[:debug] ? 'True' : 'False' %>,
+    'CACHE_TYPE': 'simple',
+    'email': {
+        'mandrill': {
+            'api_key': '<%= mandrill[:api_key] %>'
+        },
+        'sender_mail': 'duyleminh1402@gmail.com',
+        'sender_name': 'Duy Le',
+        'prefix': '[Yeah1]',
+        'admin': '<%= emails[:admin] %>',
+        'errors': [
+          <% emails[:errors].each do |address|  %>
+            '<%= address %>',
+          <% end %>
+        ],
+        <% if emails[:server] %>
+        'server': '<%= emails[:server] %>',
+        <% end %>
+        'debug': <%= emails[:debug] ? 'True' : 'False' %>,
+    },
+    'env': '<%= env %>',
+    'debug': <%= node[:web][:debug] ? 'True' : 'False' %>
+})
+
