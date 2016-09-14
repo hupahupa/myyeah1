@@ -1,4 +1,4 @@
-
+name "main"
 
 depends          "apt"
 depends          "git"

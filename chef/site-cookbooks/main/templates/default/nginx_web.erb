@@ -5,7 +5,7 @@
 server {
 
     listen              80;
-    server_name         <%= server_names.join(' ') %>;
+    server_name         <%= server_names %>;
     access_log          <%= log_dir %>/access.log;
     error_log           <%= log_dir %>/error.log;
 

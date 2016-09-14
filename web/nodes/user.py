@@ -83,10 +83,10 @@ def upload():
 @user.route('/user/upload_facebook/<video_id>')
 def upload_facebook(video_id):
     access = current_app.config["FB_ACCESS_TOKEN"]
-    fb_id = current_app.config["FB_ID"]
+    fb_page_id = current_app.config["FB_PAGE_ID"]
     v = Video.findById(video_id)
 
-    url='https://graph-video.facebook.com/'+str(fb_id)+'/videos?access_token='+str(access)
+    url='https://graph-video.facebook.com/'+str(fb_page_id)+'/videos?access_token='+str(access)
     path=os.path.join(current_app.config['UPLOAD_FOLDER'], v.filename)
 
     print "AAAA"
@@ -99,8 +99,8 @@ def upload_facebook(video_id):
 
     print response
 
-    fb_user_id = current_app.config["FB_USER_ID"]
-    v_url = 'https://www.facebook.com/'+ str(fb_user_id) +'/videos/vb.'+str(fb_user_id)+'/'+ str(response["id"])
+    fb_user_id = current_app.config["FB_PAGE_ID"]
+    v_url = 'https://www.facebook.com/'+ str(fb_user_id) +'/videos/'+ str(response["id"])
     v.fb_url = v_url
     v.fb_video_id = response["id"]
 
@@ -144,11 +144,72 @@ def video_report(video_id):
 
     url='https://graph.facebook.com/'+str(v.fb_video_id)+'/video_insights?access_token='+str(access)
     print url
+    resp = requests.get(url).text
+    resp = json.loads(resp)
 
-    flag=requests.get(url).text
-    print flag
-    return render_template('user/video_report.html')
-
+    facebook_data=format_facebook_data(resp)
+    print facebook_data
+    youtube_data={}
+    dailymotion_data={}
+    return render_template('user/video_report.html',
+        facebook_data=facebook_data,
+        youtube_data=youtube_data,
+        dailymotion_data=dailymotion_data)
+def format_facebook_data(resp):
+    # access value for single
+    single = [
+        "total_video_views",
+        "total_video_views_unique",
+        "total_video_views_autoplayed",
+        "total_video_views_clicked_to_play",
+        "total_video_views_organic",
+        "total_video_views_organic_unique",
+        "total_video_views_paid",
+        "total_video_views_paid_unique",
+        "total_video_views_sound_on",
+        "total_video_complete_views",
+        "total_video_complete_views_unique",
+        "total_video_complete_views_auto_played",
+        "total_video_complete_views_clicked_to_play",
+        "total_video_complete_views_organic",
+        "total_video_complete_views_organic_unique",
+        "total_video_complete_views_paid",
+        "total_video_complete_views_paid_unique",
+        "total_video_10s_views",
+        "total_video_10s_views_unique",
+        "total_video_10s_views_auto_played",
+        "total_video_10s_views_clicked_to_play",
+        "total_video_10s_views_organic",
+        "total_video_10s_views_paid",
+        "total_video_10s_views_sound_on",
+        "total_video_avg_time_watched",
+        "total_video_view_total_time",
+        "total_video_view_total_time_organic",
+        "total_video_view_total_time_paid",
+        "total_video_impressions",
+        "total_video_impressions_unique",
+        "total_video_impressions_paid_unique",
+        "total_video_impressions_paid",
+        "total_video_impressions_organic_unique",
+        "total_video_impressions_organic",
+        "total_video_impressions_viral_unique",
+        "total_video_impressions_viral",
+        "total_video_impressions_fan_unique",
+        "total_video_impressions_fan",
+        "total_video_impressions_fan_paid_unique",
+        "total_video_impressions_fan_paid"
+    ]
+    d = []
+    for s in resp.get("data"):
+        values = s.get("values")
+        val = values[0]
+        k = s.get("name")
+        if (k in single):
+            v = val.get("value")
+            d.append((k, v))
+        else:
+            pass
+    return d
 @user.route('/user/logout')
 def logout():
     logout_user()

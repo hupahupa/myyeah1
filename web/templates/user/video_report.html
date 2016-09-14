@@ -1,4 +1,8 @@
 {% extends "layout/main.html" %}
+{% import "user/_report_facebook.html" as facebook_view %}
+{% import "user/_report_youtube.html" as youtube_view %}
+{% import "user/_report_dailymotion.html" as dailymotion_view %}
+
 
 {% block stylesheet %}
 {% endblock %}
@@ -6,10 +10,19 @@
 {% block content %}
 <h4>Video details</h4>
 
-<dl class="dl-horizontal">
-  <dt>Views</dt>
-  <dd>111</dd>
-</dl>
+
+<ul class="nav nav-tabs"  role="tablist">
+  <li role="presentation" class="active" >
+  	<a href="#facebook" aria-controls="facebook" role="tab" data-toggle="tab">Facebook</a></li>
+  <li role="presentation"><a href="#youtube" role="tab" data-toggle="tab">Youtube</a></li>
+  <li role="presentation"><a href="#dailymotion" role="tab" data-toggle="tab">DailyMotion</a></li>
+</ul>
+
+<div class="tab-content">
+{{ facebook_view.render(facebook_data) }}
+{{ youtube_view.render(youtube_data) }}
+{{ dailymotion_view.render(dailymotion_data) }}
+</div>
 {% endblock %}
 
 {% block javascript %}
