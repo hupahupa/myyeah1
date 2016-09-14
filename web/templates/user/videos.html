@@ -10,10 +10,10 @@
   	<tr>
   		<th>Id</th>
   		<th>Name</th>
-        <th>Youtube Link</th>
-        <th>Facebook Link</th>
-        <th>Dailymotion Link</th>
-        <th>Report</th>
+      <th>Facebook Link</th>
+      <th>Youtube Link</th>
+      <th>Dailymotion Link</th>
+      <th>Report</th>
   	</tr>
   </thead>
   <tbody>
@@ -27,9 +27,15 @@
       {% else %}
       <td><a href="{{ v.fb_url }}" target="_blank">View</a></td>
       {% endif %}
-      	<td>{{ "LINK" }}</td>
-      	<td>{{ "LINK" }}</td>
-      	<td><a href="/user/video_report/{{ v.id }}">view</a></td>
+
+    	{% if not v.yt_url %}
+      <td><a class="js-upload" data-url="/user/upload_youtube/{{ v.id }}" href="/user/upload_youtube/{{ v.id }}">Upload YT</a></td>
+      {% else %}
+      <td><a href="{{ v.yt_url }}" target="_blank">View</a></td>
+      {% endif %}
+
+    	<td>{{ "LINK" }}</td>
+    	<td><a href="/user/video_report/{{ v.id }}">view</a></td>
   	</tr>
     {% endfor %}
   </tbody>

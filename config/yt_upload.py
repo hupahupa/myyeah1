@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import httplib
 import httplib2
 import os
@@ -40,7 +42,7 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 #   https://developers.google.com/youtube/v3/guides/authentication
 # For more information about the client_secrets.json file format, see:
 #   https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-CLIENT_SECRETS_FILE = "config/client_secrets.json"
+CLIENT_SECRETS_FILE = "client_secrets.json"
 
 # This OAuth 2.0 access scope allows an application to upload files to the
 # authenticated user's YouTube channel, but doesn't allow other types of access.
@@ -130,10 +132,11 @@ def resumable_upload(insert_request):
     try:
       print "Uploading file..."
       status, response = insert_request.next_chunk()
-      if 'id' in response:
-        print "Video id '%s' was successfully uploaded." % response['id']
-      else:
-        exit("The upload failed with an unexpected response: %s" % response)
+      if response is not None:
+        if 'id' in response:
+          print "Video id '%s' was successfully uploaded." % response['id']
+        else:
+          exit("The upload failed with an unexpected response: %s" % response)
     except HttpError, e:
       if e.resp.status in RETRIABLE_STATUS_CODES:
         error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status,
@@ -154,7 +157,20 @@ def resumable_upload(insert_request):
       print "Sleeping %f seconds and then retrying..." % sleep_seconds
       time.sleep(sleep_seconds)
 
-def do_upload(args):
+if __name__ == '__main__':
+  argparser.add_argument("--file", required=True, help="Video file to upload")
+  argparser.add_argument("--title", help="Video title", default="Test Title")
+  argparser.add_argument("--description", help="Video description",
+    default="Test Description")
+  argparser.add_argument("--category", default="22",
+    help="Numeric video category. " +
+      "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
+  argparser.add_argument("--keywords", help="Video keywords, comma separated",
+    default="")
+  argparser.add_argument("--privacyStatus", choices=VALID_PRIVACY_STATUSES,
+    default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
+  args = argparser.parse_args()
+
   if not os.path.exists(args.file):
     exit("Please specify a valid file using the --file= parameter.")
 

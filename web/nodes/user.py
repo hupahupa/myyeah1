@@ -108,25 +108,30 @@ def upload_facebook(video_id):
     db.session.commit()
     return redirect("user/videos")
 
+class Bunch(object):
+  def __init__(self, adict):
+    self.__dict__.update(adict)
+
+
 @user.route('/user/upload_youtube/<video_id>')
 def upload_youtube(video_id):
     v = Video.findById(video_id)
     path=os.path.join(current_app.config['UPLOAD_FOLDER'], v.filename)
-    args = {
+    params = {
         "file": path,
         "title": v.name,
         "description": "This is test description",
         "categoryId": 22,
-        "privacyStatus": "public"
+        "privacyStatus": "public",
+        "logging_level": "INFO",
+        "noauth_local_webserver": "",
+        "auth_host_port": "9600",
+        "auth_host_name": "localhost"
     }
-    # argparser.add_argument("file", required=True, default=path)
-    # argparser.add_argument("title", default=v.name)
-    # argparser.add_argument("description", default="Test Description")
-    # argparser.add_argument("category", default="22")
-    # argparser.add_argument("keywords", default="")
-    # argparser.add_argument("privacyStatus", choices="public")
-    # args = argparser.parse_args()
-    # youtube_upload.do_upload(args)
+    args = Bunch(params)
+
+    youtube_upload.do_upload(args)
+
     return render_template('user/home.html')
 
 @user.route('/user/connect_dm')
@@ -199,6 +204,16 @@ def format_facebook_data(resp):
         "total_video_impressions_fan_paid_unique",
         "total_video_impressions_fan_paid"
     ]
+    # total_video_views_by_distribution_type
+    # total_video_view_time_by_distribution_type
+    # total_video_view_time_by_region_id (empty)
+    # total_video_view_time_by_age_bucket_and_gender (empty)
+    # total_video_retention_graph
+    # total_video_retention_graph_autoplayed
+    # total_video_retention_graph_clicked_to_play (empty
+    # total_video_stories_by_action_type
+    # total_video_reactions_by_type_total
+
     d = []
     for s in resp.get("data"):
         values = s.get("values")
