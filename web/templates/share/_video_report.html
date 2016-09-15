@@ -1,0 +1,21 @@
+{% import "share/_report_facebook.html" as facebook_view %}
+{% import "share/_report_youtube.html" as youtube_view %}
+{% import "share/_report_dailymotion.html" as dailymotion_view %}
+
+{% macro render(facebook_data, youtube_data, dailymotion_data) %}
+<h4>Video report</h4>
+
+
+<ul class="nav nav-tabs"  role="tablist">
+  <li role="presentation" class="active" >
+  	<a href="#facebook" aria-controls="facebook" role="tab" data-toggle="tab">Facebook</a></li>
+  <li role="presentation"><a href="#youtube" role="tab" data-toggle="tab">Youtube</a></li>
+  <li role="presentation"><a href="#dailymotion" role="tab" data-toggle="tab">DailyMotion</a></li>
+</ul>
+
+<div class="tab-content">
+{{ facebook_view.render(facebook_data) }}
+{{ youtube_view.render(youtube_data) }}
+{{ dailymotion_view.render(dailymotion_data) }}
+</div>
+{% endmacro %}

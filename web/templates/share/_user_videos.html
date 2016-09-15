@@ -1,0 +1,48 @@
+{% macro render(user, is_admin) %}
+
+<h3>List videos of {{ user.email }}</h3>
+<table class="table table-striped">
+  <thead>
+  	<tr>
+  		<th>Id</th>
+  		<th>Name</th>
+      <th>Facebook Link</th>
+      <th>Youtube Link</th>
+      <!-- <th>Dailymotion Link</th> -->
+      <th>Report</th>
+  	</tr>
+  </thead>
+  <tbody>
+  	{% set videos = user.videos %}
+    {% for v in videos %}
+  	<tr>
+  		<td>{{ v.id }}</td>
+  		<td>{{ v.name }}</td>
+      {% if not v.fb_url %}
+  		  <td>
+          <a class="js-upload" data-url="/user/upload_facebook/{{ v.id }}" href="/user/upload_facebook/{{ v.id }}">Upload FB</a>
+        </td>
+      {% else %}
+        <td><a href="{{ v.fb_url }}" target="_blank">View</a></td>
+      {% endif %}
+
+    	{% if not v.yt_url %}
+        <td>
+          <a class="js-upload" data-url="/user/upload_youtube/{{ v.id }}" href="/user/upload_youtube/{{ v.id }}">Upload YT</a>
+        </td>
+      {% else %}
+        <td><a href="{{ v.yt_url }}" target="_blank">View</a></td>
+      {% endif %}
+
+    	<!-- <td>{{ "LINK" }}</td> -->
+      {% if(not is_admin) %}
+    	  <td><a href="/user/video_report/{{ v.id }}">view</a></td>
+      {% else %}
+        <td><a href="/admin/video_report/{{ v.id }}">view</a></td>
+      {% endif %}
+  	</tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endmacro %}

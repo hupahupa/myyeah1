@@ -17,7 +17,6 @@ from: lmd_1
 to: lmd_2
 sql: |
   ALTER TABLE tbl_video ADD COLUMN filename TEXT;
-
 ---
 table: tbl_video
 from: lmd_2
@@ -32,3 +31,9 @@ from: lmd_3
 to: lmd_4
 sql: |
   ALTER TABLE tbl_video ADD COLUMN fb_video_id TEXT;
+---
+table: tbl_video
+from: lmd_4
+to: lmd_5
+sql: |
+  ALTER TABLE tbl_video ADD COLUMN yt_video_id TEXT;

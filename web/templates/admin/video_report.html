@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary" href="/user/videos">Video List</a>
+<a class="btn btn-primary" href="/admin/users/{{ user_id }}/videos">Back</a>
 
 {{ video_report_view.render(facebook_data, youtube_data, dailymotion_data) }}
 

@@ -1,35 +1,14 @@
 {% extends "layout/main.html" %}
+{% import "share/_user_videos.html" as _user_videos_view %}
 
 {% block stylesheet %}
 {% endblock %}
 
 {% block content %}
-<h3>List videos of {{ user.email }}</h3>
-<table class="table table-striped">
-  <thead>
-  	<tr>
-  		<th>Id</th>
-  		<th>Name</th>
-        <th>Youtube Link</th>
-        <th>Facebook Link</th>
-        <th>Dailymotion Link</th>
-        <th>Report</th>
-  	</tr>
-  </thead>
-  <tbody>
-  	{% set videos = user.videos %}
-    {% for v in videos %}
-  	<tr>
-  		<td>{{ v.id }}</td>
-  		<td>{{ v.name }}</td>
-  		<td>{{ "LINK" }}</td>
-      	<td>{{ "LINK" }}</td>
-      	<td>{{ "LINK" }}</td>
-      	<td><a href="/admin/videos/{{ v.id }}">view</a></td>
-  	</tr>
-    {% endfor %}
-  </tbody>
-</table>
+<a class="btn btn-primary" href="/admin/users">User List</a>
+
+{{ _user_videos_view.render(user, True) }}
+
 {% endblock %}
 
 {% block javascript %}

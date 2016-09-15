@@ -18,6 +18,7 @@ class Video(Base, db.Model):
     filename = db.Column(db.UnicodeText())
     fb_url = db.Column(db.UnicodeText())
     fb_video_id = db.Column(db.UnicodeText())
+    yt_video_id = db.Column(db.UnicodeText())
     yt_url = db.Column(db.UnicodeText())
     dm_url = db.Column(db.UnicodeText())
     created_at = db.Column(UTCDateTime, default=lambda: pytz.UTC.localize(datetime.utcnow()))

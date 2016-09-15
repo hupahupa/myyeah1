@@ -1,0 +1,8 @@
+{% macro render(data) %}
+
+<div role="tabpanel" class="tab-pane" id="youtube">
+	{% for (k,v) in data %}
+    <strong>{{ k.capitalize().replace('_', ' ') }}</strong>: {{ v }} </br>
+  {% endfor %}
+</div>
+{% endmacro %}

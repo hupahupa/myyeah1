@@ -12,6 +12,7 @@ config.update({
     'SECRET_KEY': '<%= node[:web][:secret_key]%>',
     'SQLALCHEMY_ECHO': <%= db[:debug] ? 'True' : 'False' %>,
     'CACHE_TYPE': 'simple',
+    'CONFIG_FOLDER': '<%= node[:web][:site_dir]%>/config',
     'email': {
         'mandrill': {
             'api_key': '<%= mandrill[:api_key] %>'

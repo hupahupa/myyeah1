@@ -10,8 +10,8 @@ from web.forms.login_form import LoginFormUser
 from flask.ext.principal import Identity, identity_changed, AnonymousIdentity
 from werkzeug.utils import secure_filename
 from web.utils import youtube_upload
-from collections import namedtuple
-from oauth2client.tools import argparser
+from web.utils.report import *
+import subprocess
 import requests
 import json
 import os
@@ -25,7 +25,6 @@ def login():
         user = form.user
         login_user(user)
         identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
-
         return redirect("/user/home")
 
     return render_template('user/login.html', form=form)
@@ -97,8 +96,6 @@ def upload_facebook(video_id):
     flag=requests.post(url, files=files).text
     response = json.loads(flag)
 
-    print response
-
     fb_user_id = current_app.config["FB_PAGE_ID"]
     v_url = 'https://www.facebook.com/'+ str(fb_user_id) +'/videos/'+ str(response["id"])
     v.fb_url = v_url
@@ -108,31 +105,33 @@ def upload_facebook(video_id):
     db.session.commit()
     return redirect("user/videos")
 
-class Bunch(object):
-  def __init__(self, adict):
-    self.__dict__.update(adict)
-
-
 @user.route('/user/upload_youtube/<video_id>')
 def upload_youtube(video_id):
     v = Video.findById(video_id)
-    path=os.path.join(current_app.config['UPLOAD_FOLDER'], v.filename)
-    params = {
-        "file": path,
-        "title": v.name,
-        "description": "This is test description",
-        "categoryId": 22,
-        "privacyStatus": "public",
-        "logging_level": "INFO",
-        "noauth_local_webserver": "",
-        "auth_host_port": "9600",
-        "auth_host_name": "localhost"
-    }
-    args = Bunch(params)
+    path=os.path.abspath(os.path.join(current_app.config['UPLOAD_FOLDER'], v.filename))
 
-    youtube_upload.do_upload(args)
+    active_env = ". /home/web/.virtualenvs/web/bin/activate"
+    change_folder = "cd %s" % (current_app.config['CONFIG_FOLDER'])
+    upload_cmd = "python yt_upload.py --file='%s' --title='%s' --description='This is video upload from Yeah1 app' --keywords='yeah1,video' --category='22' --privacyStatus='public'" % (path, v.name)
 
-    return render_template('user/home.html')
+    print active_env
+    print change_folder
+    print upload_cmd
+
+    output = subprocess.check_output('%s && %s && %s' % (active_env, change_folder, upload_cmd),
+     shell=True,stderr=subprocess.STDOUT)
+
+    pos = output.find("Video id")
+    p = pos+10 # Shift 10 chars, for string Video id '
+    youtube_id = output[p:p+11]
+
+    v_url = "https://www.youtube.com/watch?v=%s" % (youtube_id)
+    v.yt_url = v_url
+    v.yt_video_id = youtube_id
+
+    db.session.add(v)
+    db.session.commit()
+    return redirect("user/videos")
 
 @user.route('/user/connect_dm')
 def connect_dm():
@@ -144,87 +143,15 @@ def user_videos():
 
 @user.route('/user/video_report/<video_id>')
 def video_report(video_id):
-    access = current_app.config["FB_ACCESS_TOKEN"]
     v = Video.findById(video_id)
+    if not v.fb_video_id or not v.yt_video_id:
+        return redirect("user/videos")
 
-    url='https://graph.facebook.com/'+str(v.fb_video_id)+'/video_insights?access_token='+str(access)
-    print url
-    resp = requests.get(url).text
-    resp = json.loads(resp)
-
-    facebook_data=format_facebook_data(resp)
-    print facebook_data
-    youtube_data={}
-    dailymotion_data={}
     return render_template('user/video_report.html',
-        facebook_data=facebook_data,
-        youtube_data=youtube_data,
-        dailymotion_data=dailymotion_data)
-def format_facebook_data(resp):
-    # access value for single
-    single = [
-        "total_video_views",
-        "total_video_views_unique",
-        "total_video_views_autoplayed",
-        "total_video_views_clicked_to_play",
-        "total_video_views_organic",
-        "total_video_views_organic_unique",
-        "total_video_views_paid",
-        "total_video_views_paid_unique",
-        "total_video_views_sound_on",
-        "total_video_complete_views",
-        "total_video_complete_views_unique",
-        "total_video_complete_views_auto_played",
-        "total_video_complete_views_clicked_to_play",
-        "total_video_complete_views_organic",
-        "total_video_complete_views_organic_unique",
-        "total_video_complete_views_paid",
-        "total_video_complete_views_paid_unique",
-        "total_video_10s_views",
-        "total_video_10s_views_unique",
-        "total_video_10s_views_auto_played",
-        "total_video_10s_views_clicked_to_play",
-        "total_video_10s_views_organic",
-        "total_video_10s_views_paid",
-        "total_video_10s_views_sound_on",
-        "total_video_avg_time_watched",
-        "total_video_view_total_time",
-        "total_video_view_total_time_organic",
-        "total_video_view_total_time_paid",
-        "total_video_impressions",
-        "total_video_impressions_unique",
-        "total_video_impressions_paid_unique",
-        "total_video_impressions_paid",
-        "total_video_impressions_organic_unique",
-        "total_video_impressions_organic",
-        "total_video_impressions_viral_unique",
-        "total_video_impressions_viral",
-        "total_video_impressions_fan_unique",
-        "total_video_impressions_fan",
-        "total_video_impressions_fan_paid_unique",
-        "total_video_impressions_fan_paid"
-    ]
-    # total_video_views_by_distribution_type
-    # total_video_view_time_by_distribution_type
-    # total_video_view_time_by_region_id (empty)
-    # total_video_view_time_by_age_bucket_and_gender (empty)
-    # total_video_retention_graph
-    # total_video_retention_graph_autoplayed
-    # total_video_retention_graph_clicked_to_play (empty
-    # total_video_stories_by_action_type
-    # total_video_reactions_by_type_total
+        facebook_data=gather_facebook_report(v),
+        youtube_data=gather_youtube_report(v),
+        dailymotion_data=gather_dailymotion_report(v))
 
-    d = []
-    for s in resp.get("data"):
-        values = s.get("values")
-        val = values[0]
-        k = s.get("name")
-        if (k in single):
-            v = val.get("value")
-            d.append((k, v))
-        else:
-            pass
-    return d
 @user.route('/user/logout')
 def logout():
     logout_user()
@@ -236,7 +163,6 @@ def logout():
                             identity=AnonymousIdentity())
     #return redirect(url_for('user_route.signin'))
     return redirect('/')
-
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = current_app.config["ALLOWED_EXTENSIONS"]

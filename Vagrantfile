@@ -70,6 +70,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             :nginx => {
                 :sendfile => 'off',
                 :version => '1.6.2',
+                :client_max_body_size => '50M'
             },
             :mysql => {
                 :server_root_password => 'vagrant',
