@@ -1,0 +1,15 @@
+{% extends "layout/main.html" %}
+{% import "share/_user_videos.html" as _user_videos_view %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-primary" href="/admin/users">User List</a>
+
+{{ _user_videos_view.render(user, True) }}
+
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}

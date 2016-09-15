@@ -33,11 +33,16 @@ def users():
         )
     return render_template('admin/users.html', users=users)
 
+@admin.route('/admin/videos')
+def admin_videos():
+    videos = Video.findAllByAttributes()
+
+    return render_template('admin/videos.html', videos=videos)
 
 @admin.route('/admin/users/<user_id>/videos')
 def videos(user_id):
     user = User.findById(user_id)
-    return render_template('admin/videos.html', user=user)
+    return render_template('admin/user_videos.html', user=user)
 
 
 @admin.route('/admin/video_report/<video_id>')

@@ -1,6 +1,10 @@
 {% macro render(user, is_admin) %}
 
 <h3>List videos of {{ user.email }}</h3>
+
+<div class="alert alert-info" role="alert">
+<strong>Note!</strong> When the video is uploaded successfully to eighter Youtube or Facebook. It need time to be processed before visible to view. Refresh to see.</div>
+
 <table class="table table-striped">
   <thead>
   	<tr>

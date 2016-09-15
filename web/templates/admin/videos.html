@@ -1,14 +1,46 @@
 {% extends "layout/main.html" %}
-{% import "share/_user_videos.html" as _user_videos_view %}
 
 {% block stylesheet %}
 {% endblock %}
 
 {% block content %}
-<a class="btn btn-primary" href="/admin/users">User List</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Facebook Link</th>
+        <th>Youtube Link</th>
+        <th>Owner</th>
+        <th>Report</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in videos %}
+    <tr>
+        <td>{{ v.id }}</td>
+        <td>{{ v.name }}</td>
+        {% if not v.fb_url %}
+          <td>
+            Not available
+          </td>
+        {% else %}
+          <td><a href="{{ v.fb_url }}" target="_blank">View</a></td>
+        {% endif %}
 
-{{ _user_videos_view.render(user, True) }}
-
+        {% if not v.yt_url %}
+          <td>
+            Not available
+          </td>
+        {% else %}
+           <td><a href="{{ v.yt_url }}" target="_blank">View</a></td>
+        {% endif %}
+        <td><a href="/admin/users/{{ v.user_id }}/videos">{{ v.user.full_name }}</a></td>
+        <td><a href="/admin/video_report/{{ v.id }}">view</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
 
 {% block javascript %}
